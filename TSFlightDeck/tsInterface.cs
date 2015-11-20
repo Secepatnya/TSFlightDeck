@@ -25,7 +25,8 @@ namespace TSFlightDeck
 
         public static void connect()
         {
-            tc.connect();
+            if (!tc.IsConnected)
+                tc.connect();
         }
 
         public static void sendMessage(string msg)
@@ -84,12 +85,14 @@ namespace TSFlightDeck
 
             // permissions check
             if (allowuid.All(senderuidtr.Contains))
+            //if (true)
             {
                 if (cmd == "msg=fdselect1")  // find player 1 track
                 {
                     if (cs.P1findTrack(argue))
                     {
                         sendMessage("选择的曲目: " + cs.player1.selectedTrack.name + "。");
+                        //cs.P1Start();
                     }
                     else
                     {
@@ -151,6 +154,12 @@ namespace TSFlightDeck
                     cs.satellite.SetVolume(1f);
                     sendMessage("音量已复位。");
                 }
+                else if (cmd == "msg=fdtsreset") // force TS unmute
+                {
+                    tc.WriteLine("clientupdate client_nickname=MusicBot-Primary");
+                    tc.WriteLine("clientupdate client_output_muted=0");
+                    tc.WriteLine("clientupdate client_input_muted=0");
+                }
 
             }
         }
@@ -164,7 +173,7 @@ namespace TSFlightDeck
             {
                 timer = new DispatcherTimer();
                 timer.Tick += TimerOnTick;
-                timer.Interval = TimeSpan.FromSeconds(2);
+                timer.Interval = TimeSpan.FromSeconds(0.5);
                 timer.Start();
             }
         }
@@ -180,6 +189,7 @@ namespace TSFlightDeck
 
         static void TimerOnTick(object sender, EventArgs args)
         {
+            connect();
             parseMessage(tc.Read());
         }
 

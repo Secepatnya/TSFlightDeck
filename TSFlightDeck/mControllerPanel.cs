@@ -231,7 +231,6 @@ namespace TSFlightDeck
 
             Properties.Settings.Default.Save();
 
-
         }
     }
 }
