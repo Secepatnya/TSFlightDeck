@@ -82,31 +82,34 @@ namespace MinimalisticTelnet
 
         public void Write(string cmd)
         {
-            if (!tcpSocket.Connected)
-            {
-                connect();
-            }
-            else
+            try 
             {
                 byte[] buf = Encoding.UTF8.GetBytes(cmd);
                 tcpSocket.GetStream().Write(buf, 0, buf.Length);
+            }
+            catch
+            {
+                connect();
             }
         }
 
         public string Read()
         {
-            if (!tcpSocket.Connected)
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                do
+                {
+                    ParseTelnet(sb);
+                    System.Threading.Thread.Sleep(TimeOutMs);
+                } while (tcpSocket.Available > 0);
+                return sb.ToString();
+            }
+            catch
             {
                 connect();
                 return null;
             }
-            StringBuilder sb=new StringBuilder();
-            do
-            {
-                ParseTelnet(sb);
-                System.Threading.Thread.Sleep(TimeOutMs);
-            } while (tcpSocket.Available > 0);
-            return sb.ToString();
         }
 
         public bool IsConnected

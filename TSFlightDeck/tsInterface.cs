@@ -43,8 +43,9 @@ namespace TSFlightDeck
 
         public static void parseMessage(string input)
         {
-            if (input == null) return; 
-            
+            if (input == null) return;
+
+            Console.WriteLine("message: " + input);
             if (input.Length > 0)
             {
                 string sender;
