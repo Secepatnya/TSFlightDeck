@@ -12,6 +12,7 @@ namespace TSFlightDeck
     class tsInterface
     {
         static DispatcherTimer timer;
+        static DispatcherTimer timer2;
         static mControllerPanel cs;
         static List<string> allowuid = new List<string>();
 
@@ -177,6 +178,13 @@ namespace TSFlightDeck
                 timer.Interval = TimeSpan.FromSeconds(0.5);
                 timer.Start();
             }
+            if (timer2 == null)
+            {
+                timer2 = new DispatcherTimer();
+                timer2.Tick += TimerOnTick2;
+                timer2.Interval = TimeSpan.FromMinutes(4);
+                timer2.Start();
+            }
         }
 
         public static void pollServiceStop()
@@ -186,12 +194,21 @@ namespace TSFlightDeck
                 timer.Stop();
                 timer = null;
             }
+            if (timer2 != null)
+            {
+                timer2.Stop();
+                timer2 = null;
+            }
         }
 
         static void TimerOnTick(object sender, EventArgs args)
         {
-            connect();
             parseMessage(tc.Read());
+        }
+        //keepalive
+        static void TimerOnTick2(object sender, EventArgs args)
+        {
+            tc.WriteLine("whoami"); //keepalive
         }
 
         #endregion
