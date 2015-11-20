@@ -3,7 +3,7 @@
 //
 // http://www.corebvba.be
 
-
+// Modified to use UTF8, TS3 ClientQuery, autoreconnect.
 
 using System;
 using System.Collections.Generic;
@@ -88,8 +88,6 @@ namespace MinimalisticTelnet
             }
             else
             {
-                //byte[] buf = System.Text.ASCIIEncoding.ASCII.GetBytes(cmd.Replace("\0xFF","\0xFF\0xFF"));
-                //buf = System.Text.UnicodeEncoding.Convert(System.Text.ASCIIEncoding.ASCII, System.Text.UnicodeEncoding.Unicode, buf);
                 byte[] buf = Encoding.UTF8.GetBytes(cmd);
                 tcpSocket.GetStream().Write(buf, 0, buf.Length);
             }
@@ -97,7 +95,11 @@ namespace MinimalisticTelnet
 
         public string Read()
         {
-            if (tcpSocket != null && !tcpSocket.Connected) return null;
+            if (!tcpSocket.Connected)
+            {
+                connect();
+                return null;
+            }
             StringBuilder sb=new StringBuilder();
             do
             {

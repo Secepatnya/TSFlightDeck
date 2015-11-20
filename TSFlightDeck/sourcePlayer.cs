@@ -21,7 +21,7 @@ namespace TSFlightDeck
         /* Music File Manager */
         public ObservableCollection<musicItem> playlist;
 
-        private musicItem selectedTrack;
+        public musicItem selectedTrack;
 
         AudioFileReader audioFileReader;
         MixingSampleProvider mixer;

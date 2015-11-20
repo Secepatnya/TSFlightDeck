@@ -13,9 +13,15 @@ namespace TSFlightDeck
     {
         static DispatcherTimer timer;
         static mControllerPanel cs;
+        static List<string> allowuid = new List<string>();
 
         
         public static MinimalisticTelnet.TelnetConnection tc = new MinimalisticTelnet.TelnetConnection();
+
+        static tsInterface()
+        {
+            
+        }
 
         public static void connect()
         {
@@ -34,35 +40,116 @@ namespace TSFlightDeck
             cs = target;
         }
 
-        public static void processMessage(string input)
+        public static void parseMessage(string input)
         {
             if (input == null) return; 
             
-            input = input.ToLower();
             if (input.Length > 0)
             {
+                string sender;
+                string cmd;
+                string argue;
 
+
+                // Split notification into array
                 char[] delimiter = { ' ' };
-                string[] temp = input.Split(delimiter);
+                string[] notifAsArray = input.Split(delimiter);
 
-                // parse notification into message
-                if (temp.Length >= 2)
+                // get message content from notification
+                if (notifAsArray.Length >= 2 && notifAsArray[0].Equals("notifytextmessage"))
                 {
-                    Console.WriteLine("Last message: {0}", temp[3]);
+                    sender = notifAsArray[6];
                     string[] delimiter2 = { "\\s" };
-                    string[] temp2 = temp[3].Split(delimiter2, StringSplitOptions.None);
+                    string[] msgAsArray = notifAsArray[3].Split(delimiter2, StringSplitOptions.None);
 
 
-                    //  parse song name from message
-                    if (temp2.Length > 1 && temp2[0].Contains("play"))
+                    // separate command from params
+                    if (msgAsArray.Length > 0)
                     {
-                        string finalLookup = string.Join(" ", temp2.Skip(1));
-                        Console.WriteLine(finalLookup);
-
-                        // look for song
-                        if (!cs.P1findTrack(finalLookup))
-                            sendMessage("找不到 " + temp2[1]);
+                        cmd = msgAsArray[0];
+                        argue = string.Join(" ", msgAsArray.Skip(1));
+                        processCommand(sender, cmd, argue);
                     }
+                }
+
+            }
+        }
+
+        public static void processCommand(string senderuid, string cmd, string argue)
+        {
+            cmd = cmd.ToLower();
+            argue = argue.ToLower();
+
+            string senderuidtr = senderuid.Substring(11);
+
+            // permissions check
+            if (allowuid.All(senderuidtr.Contains))
+            {
+                if (cmd == "msg=fdselect1")  // find player 1 track
+                {
+                    if (cs.P1findTrack(argue))
+                    {
+                        sendMessage("选择的曲目: " + cs.player1.selectedTrack.name + "。");
+                    }
+                    else
+                    {
+                        sendMessage("找不到 " + argue + "。");
+                    }
+
+                }
+                else if (cmd == "msg=fdselect2")  // find player 2 track
+                {
+                    if (cs.P2findTrack(argue))
+                    {
+                        sendMessage("选择的曲目: " + cs.player2.selectedTrack.name + "。");
+                    }
+                    else
+                    {
+                        sendMessage("找不到 " + argue + "。");
+                    }
+                }
+                else if (cmd == "msg=fdplay1") // start player 1
+                {
+                    cs.P1Start();
+                }
+                else if (cmd == "msg=fdplay2") // start player 2
+                {
+                    cs.P2Start();
+                }
+                else if (cmd == "msg=fdann") // duck all sources and start player 2
+                {
+                    cs.P2StartQuacking();
+                }
+                else if (cmd == "msg=fdstop1") // stop player 1
+                {
+                    cs.player1.Stop();
+                }
+                else if (cmd == "msg=fdstop2") // stop player 2
+                {
+                    cs.player2.Stop();
+                }
+                else if (cmd == "msg=fdsat") // solo satellite
+                {
+                    cs.player1.Stop();
+                    cs.player2.Stop();
+                    cs.satellite.Start();
+                    cs.satellite.SetVolume(1f);
+                }
+                else if (cmd == "msg=fdsatstop") // stop satellite
+                {
+                    cs.satellite.Stop();
+                }
+                else if (cmd == "msg=fdresetsys") // reset outputs
+                {
+                    cs.resetOutput();
+                    sendMessage("音频子系统已复位。");
+                }
+                else if (cmd == "msg=fdresetvol") // reset outputs
+                {
+                    cs.player1.SetVolume(1f);
+                    cs.player2.SetVolume(1f);
+                    cs.satellite.SetVolume(1f);
+                    sendMessage("音量已复位。");
                 }
 
             }
@@ -79,7 +166,6 @@ namespace TSFlightDeck
                 timer.Tick += TimerOnTick;
                 timer.Interval = TimeSpan.FromSeconds(2);
                 timer.Start();
-                Console.WriteLine("Polling started");
             }
         }
 
@@ -94,7 +180,7 @@ namespace TSFlightDeck
 
         static void TimerOnTick(object sender, EventArgs args)
         {
-            processMessage(tc.Read());
+            parseMessage(tc.Read());
         }
 
         #endregion

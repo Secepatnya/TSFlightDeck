@@ -58,7 +58,7 @@ namespace TSFlightDeck
 
             ap = new mAutopilot(this);
             tsInterface.setController(this);
-            //tsInterface.pollServiceStart();
+            tsInterface.pollServiceStart();
             tsInterface.connect();
         }
 
@@ -160,7 +160,21 @@ namespace TSFlightDeck
                 if (item.name.ToLower().Contains(target))
                 {
                     player1.selectTrack(item);
-                    P1Start();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool P2findTrack(string target)
+        {
+            Console.WriteLine("Looking for track with name: {0}", target);
+            List<musicItem> tempList = player2.playlist.ToList<musicItem>();
+            foreach (musicItem item in tempList)
+            {
+                if (item.name.ToLower().Contains(target))
+                {
+                    player2.selectTrack(item);
                     return true;
                 }
             }

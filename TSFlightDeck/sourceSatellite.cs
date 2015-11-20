@@ -48,7 +48,7 @@ namespace TSFlightDeck
             {
                 inputSat.StartRecording();
                 sourceState = "ON";
-                tsInterface.sendMessage("Now playing from External Input");
+                tsInterface.sendMessage("接口已改到外部。");
             }
         }
 
