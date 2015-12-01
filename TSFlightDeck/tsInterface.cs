@@ -86,8 +86,8 @@ namespace TSFlightDeck
             string senderuidtr = senderuid.Substring(11);
 
             // permissions check
-            if (allowuid.All(senderuidtr.Contains))
-            //if (true)
+            if (allowuid.All(senderuidtr.Contains)) // build for CHTEA TS
+            //if (true) // build for Cherie's TS
             {
                 if (cmd == "msg=fdselect1")  // find player 1 track
                 {
@@ -100,7 +100,18 @@ namespace TSFlightDeck
                     {
                         sendMessage("找不到 " + argue + "。");
                     }
-
+                }
+                else if (cmd == "msg=play")  // Bot code for Cherie's TS
+                {
+                    if (cs.P1findTrack(argue))
+                    {
+                        //sendMessage("选择的曲目: " + cs.player1.selectedTrack.name + "。");
+                        cs.P1Start();
+                    }
+                    else
+                    {
+                        sendMessage("找不到 " + argue + "。");
+                    }
                 }
                 else if (cmd == "msg=fdselect2")  // find player 2 track
                 {

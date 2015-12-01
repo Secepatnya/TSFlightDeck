@@ -25,7 +25,8 @@ namespace TSFlightDeck
         /* Settings */
 
         /* Init Stuff */
-        private DirectSoundOut outputMaster;
+        //private DirectSoundOut outputMaster;
+        private WaveOutEvent outputMaster;
         private MixingSampleProvider mixer;
 
         public mAutopilot ap;
@@ -50,8 +51,10 @@ namespace TSFlightDeck
             player2 = new sourcePlayer(mixer);
             
             // Open output line
-            outputMaster = new DirectSoundOut();
-            
+            //outputMaster = new DirectSoundOut();
+            outputMaster = new WaveOutEvent();
+
+            outputMaster.DesiredLatency = 700;
             outputMaster.Init(mixer);
             outputMaster.Play();
             loadConfig();

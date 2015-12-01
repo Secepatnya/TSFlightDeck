@@ -80,6 +80,7 @@ namespace TSFlightDeck
                 {
                     audioFileReader = new AudioFileReader(selectedTrack.url);
                     audioFileReader.Volume = volume;
+                    
 
                     //mixer.AddInputStream(audioFileReader);
                     mixer.AddMixerInput((ISampleProvider)audioFileReader);
