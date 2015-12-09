@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using System.IO;
 
 
 namespace TSFlightDeck
@@ -36,12 +37,19 @@ namespace TSFlightDeck
             tc.WriteLine("sendtextmessage targetmode=2 msg=" + msg);
         }
 
+        public static void sendPrivateMessage(string receiver, string msg)
+        {
+            msg = msg.Replace(" ", "\\s");
+            tc.WriteLine("sendtextmessage targetmode=1 target=" + receiver + "  msg=" + msg);
+        }
+
         #region songrequest
         public static void setController(mControllerPanel target)
         {
             cs = target;
         }
 
+        // need to convert the parser to use dictionaries 
         public static void parseMessage(string input)
         {
             if (input == null) return;
@@ -53,7 +61,6 @@ namespace TSFlightDeck
                 string cmd;
                 string argue;
 
-
                 // Split notification into array
                 char[] delimiter = { ' ' };
                 string[] notifAsArray = input.Split(delimiter);
@@ -62,9 +69,9 @@ namespace TSFlightDeck
                 if (notifAsArray.Length >= 2 && notifAsArray[0].Equals("notifytextmessage"))
                 {
                     sender = notifAsArray[6];
+
                     string[] delimiter2 = { "\\s" };
                     string[] msgAsArray = notifAsArray[3].Split(delimiter2, StringSplitOptions.None);
-
 
                     // separate command from params
                     if (msgAsArray.Length > 0)
@@ -72,6 +79,24 @@ namespace TSFlightDeck
                         cmd = msgAsArray[0];
                         argue = string.Join(" ", msgAsArray.Skip(1));
                         processCommand(sender, cmd, argue);
+                    }
+                }
+                else if (notifAsArray.Length >= 2 && notifAsArray[0].Equals("notifyclientpoke")) // poke fun
+                {
+                    sender = notifAsArray[3];
+
+                    string[] delimiter1 = { "=" };
+                    string[] delimiter2 = { "\\s" };
+                    string[] senderAsArray = notifAsArray[3].Split(delimiter2, StringSplitOptions.None);
+                    string[] senderAsArray2 = string.Join(" ", senderAsArray).Split(delimiter1, StringSplitOptions.None);
+
+
+                    // separate command from params
+                    if (senderAsArray.Length > 0)
+                    {
+                        cmd = senderAsArray[0];
+                        argue = string.Join(" ", senderAsArray2.Skip(1));
+                        sendMessage("Ow! " + argue + ", 为什么你戳我呢?");
                     }
                 }
 
@@ -86,8 +111,8 @@ namespace TSFlightDeck
             string senderuidtr = senderuid.Substring(11);
 
             // permissions check
-            if (allowuid.All(senderuidtr.Contains)) // build for CHTEA TS
-            //if (true) // build for Cherie's TS
+            //if (allowuid.All(senderuidtr.Contains)) // build for CHTEA TS
+            if (true) // build for Cherie's TS
             {
                 if (cmd == "msg=fdselect1")  // find player 1 track
                 {
@@ -169,11 +194,31 @@ namespace TSFlightDeck
                 }
                 else if (cmd == "msg=fdtsreset") // force TS unmute
                 {
-                    tc.WriteLine("clientupdate client_nickname=MusicBot-Primary");
+                    //tc.WriteLine("clientupdate client_nickname=MusicBot-Primary");
                     tc.WriteLine("clientupdate client_output_muted=0");
                     tc.WriteLine("clientupdate client_input_muted=0");
                 }
-
+                else if (cmd == "msg=fdplaymode") // playmode for primary player
+                {
+                    switch (argue) 
+                    {
+                        case "single": 
+                            cs.player1.selectedPlayMode = sourcePlayer.playModes.Single;
+                            sendMessage("播放模式已设置到 Single");
+                            break;
+                        case "cont": 
+                            cs.player1.selectedPlayMode = sourcePlayer.playModes.Continous;
+                            sendMessage("播放模式已设置到 Continous");
+                            break;
+                        case "repeatone": 
+                            cs.player1.selectedPlayMode = sourcePlayer.playModes.RepeatOne;
+                            sendMessage("播放模式已设置到 RepeatOne");
+                            break;
+                        default: 
+                            sendMessage("没有指定可用的设置。可用的是: single、 cont、 repeatone。");
+                            break;
+                    }
+                }
             }
         }
 

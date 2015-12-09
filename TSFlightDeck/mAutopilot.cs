@@ -45,8 +45,8 @@ namespace TSFlightDeck
             events = new ObservableCollection<eventItem>();
 
             apRoutines();
-            //mainMusicStartOnly(); // Build for Cherie's TS 
-            autoStart(); // Build for CHTEA TS
+            mainMusicStartOnly(); // Build for Cherie's TS 
+            //autoStart(); // Build for CHTEA TS
         }
 
         public void apAddRoutine(string name, Action command, int hour, int minute, DayOfWeek dayName)
