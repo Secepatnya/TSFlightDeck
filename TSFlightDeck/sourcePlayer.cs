@@ -12,7 +12,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using NAudio.Wave.SampleProviders;
 
-namespace TSFlightDeck
+namespace Razzle
 {
     class sourcePlayer : sourceParent
     {
@@ -24,6 +24,8 @@ namespace TSFlightDeck
         public musicItem selectedTrack;
 
         AudioFileReader audioFileReader;
+        ISampleProvider audioFileReaderConverted;
+
         MixingSampleProvider mixer;
 
         string[] allowedFileTypes = { ".mp3", ".wma", ".wav" };
@@ -80,12 +82,15 @@ namespace TSFlightDeck
                 {
                     audioFileReader = new AudioFileReader(selectedTrack.url);
                     audioFileReader.Volume = volume;
-                    
 
+                    audioFileReaderConverted = new SampleToWaveProvider(new SampleChannel(audioFileReader, true)).ToSampleProvider();
+
+
+                    mixer.AddMixerInput(audioFileReaderConverted);
                     //mixer.AddInputStream(audioFileReader);
-                    mixer.AddMixerInput((ISampleProvider)audioFileReader);
+                    //mixer.AddMixerInput(new SampleChannel(audioFileReader,true));
                     sourceState = "Playing: " + selectedTrack.name;
-                    tsInterface.sendMessage("正在播放: " + Path.GetFileNameWithoutExtension(selectedTrack.name));
+                    tsInterface.sendMessage("Now Playing: " + Path.GetFileNameWithoutExtension(selectedTrack.name));
 
                     stopped = false;
 
@@ -96,10 +101,11 @@ namespace TSFlightDeck
                     sourceState = "Stopped";
                 }
             }
-            catch
+            catch (Exception e)
             {
                 sourceState = "Cannot play file.";
-				stopped = false;
+                Console.WriteLine(e.ToString());
+                stopped = false;
             }
 
             if (!stopped)
@@ -162,7 +168,8 @@ namespace TSFlightDeck
         {
             if (audioFileReader != null)
             {
-                mixer.RemoveMixerInput(audioFileReader);
+                //mixer.RemoveMixerInput(audioFileReader);
+                mixer.RemoveMixerInput(audioFileReaderConverted);
 
                 audioFileReader.Dispose();
                 audioFileReader = null;

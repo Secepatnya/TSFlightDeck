@@ -8,7 +8,7 @@ using System.Windows.Threading;
 using System.IO;
 
 
-namespace TSFlightDeck
+namespace Razzle
 {
     class tsInterface
     {
@@ -22,13 +22,18 @@ namespace TSFlightDeck
 
         static tsInterface()
         {
-            
+            // IDs go here
+            allowuid.Add("UihKsxdxvU1NnLskaoq+lQhcbPY=");
         }
 
         public static void connect()
         {
             if (!tc.IsConnected)
+            {
                 tc.connect();
+            }
+            sendMessage("TS Music Bot 'Razzle' has started successfully!");
+            
         }
 
         public static void sendMessage(string msg)
@@ -96,7 +101,7 @@ namespace TSFlightDeck
                     {
                         cmd = senderAsArray[0];
                         argue = string.Join(" ", senderAsArray2.Skip(1));
-                        sendMessage("Ow! " + argue + ", 为什么你戳我呢?");
+                        sendMessage("Ow! " + argue + ", why did you poke me?");
                     }
                 }
 
@@ -107,23 +112,24 @@ namespace TSFlightDeck
         {
             cmd = cmd.ToLower();
             argue = argue.ToLower();
+            string combined = String.Concat(cmd, argue);
 
             string senderuidtr = senderuid.Substring(11);
 
             // permissions check
-            //if (allowuid.All(senderuidtr.Contains)) // build for CHTEA TS
-            if (true) // build for Cherie's TS
+            if (allowuid.All(senderuidtr.Contains)) // build for CHTEA TS
+            //if (true) // build for Cherie's TS
             {
                 if (cmd == "msg=fdselect1")  // find player 1 track
                 {
                     if (cs.P1findTrack(argue))
                     {
-                        sendMessage("选择的曲目: " + cs.player1.selectedTrack.name + "。");
+                        sendMessage("Selected track on primary player: " + cs.player1.selectedTrack.name + "。");
                         //cs.P1Start();
                     }
                     else
                     {
-                        sendMessage("找不到 " + argue + "。");
+                        sendMessage("Cannot find " + argue + ".");
                     }
                 }
                 else if (cmd == "msg=play")  // Bot code for Cherie's TS
@@ -131,22 +137,22 @@ namespace TSFlightDeck
                     if (cs.P1findTrack(argue))
                     {
                         //sendMessage("选择的曲目: " + cs.player1.selectedTrack.name + "。");
-                        cs.P1Start();
+                        //cs.P1Start();
                     }
                     else
                     {
-                        sendMessage("找不到 " + argue + "。");
+                        sendMessage("Cannot find " + argue + ".");
                     }
                 }
                 else if (cmd == "msg=fdselect2")  // find player 2 track
                 {
                     if (cs.P2findTrack(argue))
                     {
-                        sendMessage("选择的曲目: " + cs.player2.selectedTrack.name + "。");
+                        sendMessage("Selected track on secondary player: " + cs.player2.selectedTrack.name + ".");
                     }
                     else
                     {
-                        sendMessage("找不到 " + argue + "。");
+                        sendMessage("Cannot find " + argue + ".");
                     }
                 }
                 else if (cmd == "msg=fdplay1") // start player 1
@@ -183,14 +189,14 @@ namespace TSFlightDeck
                 else if (cmd == "msg=fdresetsys") // reset outputs
                 {
                     cs.resetOutput();
-                    sendMessage("音频子系统已复位。");
+                    sendMessage("Soundboard is reset");
                 }
                 else if (cmd == "msg=fdresetvol") // reset outputs
                 {
                     cs.player1.SetVolume(1f);
                     cs.player2.SetVolume(1f);
                     cs.satellite.SetVolume(1f);
-                    sendMessage("音量已复位。");
+                    sendMessage("Volume is reset");
                 }
                 else if (cmd == "msg=fdtsreset") // force TS unmute
                 {
@@ -204,18 +210,18 @@ namespace TSFlightDeck
                     {
                         case "single": 
                             cs.player1.selectedPlayMode = sourcePlayer.playModes.Single;
-                            sendMessage("播放模式已设置到 Single");
+                            sendMessage("Playmode is set to Single");
                             break;
                         case "cont": 
                             cs.player1.selectedPlayMode = sourcePlayer.playModes.Continous;
-                            sendMessage("播放模式已设置到 Continous");
+                            sendMessage("Playmode is set to Continous");
                             break;
                         case "repeatone": 
                             cs.player1.selectedPlayMode = sourcePlayer.playModes.RepeatOne;
-                            sendMessage("播放模式已设置到 RepeatOne");
+                            sendMessage("Playmode is set to RepeatOne");
                             break;
                         default: 
-                            sendMessage("没有指定可用的设置。可用的是: single、 cont、 repeatone。");
+                            sendMessage("Invalid option. Available options are: single, cont, repeatone.");
                             break;
                     }
                 }

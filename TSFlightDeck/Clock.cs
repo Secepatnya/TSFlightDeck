@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace TSFlightDeck
+namespace Razzle
 {
     public class timeDisplay: DependencyObject
     {

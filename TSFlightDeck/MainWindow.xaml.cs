@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TSFlightDeck
+namespace Razzle
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -227,7 +227,7 @@ namespace TSFlightDeck
 
         void DataWindow_Closing(object sender, CancelEventArgs e)
         {
-        string msg = "Are you sure you want to close the Flight Deck?";
+        string msg = "Are you sure you want to close this program?";
             MessageBoxResult result =
                 MessageBox.Show(
                     msg,

@@ -8,7 +8,7 @@ using NAudio.Wave;
 using System.Threading;
 using System.Configuration;
 
-namespace TSFlightDeck
+namespace Razzle
 {
 
     public class musicItem : ApplicationSettingsBase

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TSFlightDeck
+namespace Razzle
 {
     class sourceSatellite : sourceParent
     {
@@ -48,7 +48,7 @@ namespace TSFlightDeck
             {
                 inputSat.StartRecording();
                 sourceState = "ON";
-                tsInterface.sendMessage("接口已改到外部。");
+                tsInterface.sendMessage("Switched to External Input.");
             }
         }
 

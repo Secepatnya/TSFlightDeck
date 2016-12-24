@@ -10,7 +10,7 @@ using NAudio.Wave.SampleProviders;
 using System.ComponentModel;
 
 
-namespace TSFlightDeck
+namespace Razzle
 {
     class mControllerPanel : INotifyPropertyChanged
     {

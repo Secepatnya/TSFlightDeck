@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 
-namespace TSFlightDeck
+namespace Razzle
 {
     class mAutopilot : INotifyPropertyChanged
     {
@@ -45,8 +45,8 @@ namespace TSFlightDeck
             events = new ObservableCollection<eventItem>();
 
             apRoutines();
-            mainMusicStartOnly(); // Build for Cherie's TS 
-            //autoStart(); // Build for CHTEA TS
+            //mainMusicStartOnly(); // Build for Cherie's TS 
+            autoStart(); // Build for CHTEA TS
         }
 
         public void apAddRoutine(string name, Action command, int hour, int minute, DayOfWeek dayName)
@@ -64,22 +64,18 @@ namespace TSFlightDeck
 
         public void apRoutines()
         {
-            apAddRoutine("Saturday Main Program BOARDING", mainMusicStartOnly, 15, 00, DayOfWeek.Saturday);
+            apAddRoutine("Saturday Main Program PREP", mainMusicStartOnly, 15, 30, DayOfWeek.Saturday);
             apAddRoutine("Saturday Main Program START", announceAndMainStart, 15, 55, DayOfWeek.Saturday);
             apAddRoutine("Saturday Main Program FINISH", mainProgramFinish, 17, 03, DayOfWeek.Saturday);
 
             apAddRoutine("Saturday Night Program START", auxStartOnly, 22, 00, DayOfWeek.Saturday);
 
-            apAddRoutine("SUNDAY Main Program BOARDING", mainMusicStartOnly, 13, 00, DayOfWeek.Sunday);
+            apAddRoutine("SUNDAY Main Program PREP", mainMusicStartOnly, 13, 30, DayOfWeek.Sunday);
             apAddRoutine("SUNDAY Main Program START", announceAndMainStart, 13, 55, DayOfWeek.Sunday);
             apAddRoutine("SUNDAY Main Program FINISH", mainProgramFinish, 15, 03, DayOfWeek.Sunday);
 
             apAddRoutine("SUNDAY Night Program START", auxStartOnly, 22, 00, DayOfWeek.Sunday);
 
-
-
-            //apAddRoutine("TEST", announceAndMainStart, 18, 01, DayOfWeek.Thursday);
-            //apAddRoutine("TEST STOP", mainProgramFinish, 18, 05, DayOfWeek.Thursday);
         }
 
         public void pollServiceStart() 
