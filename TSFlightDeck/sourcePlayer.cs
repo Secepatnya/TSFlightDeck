@@ -74,7 +74,6 @@ namespace Razzle
         // Play selected track
         public void AcceptStart()
         {
-            stopped = false;
             //Check if another load operation is running. Halt if one is
             if (locked)
             {
@@ -118,7 +117,7 @@ namespace Razzle
                     tsInterface.sendMessage("Now Playing: " + Path.GetFileNameWithoutExtension(selectedTrack.name));
 
                     audioFileReader.Volume = volume;
-
+                    stopped = false;
                     locked = false;
                     while (audioFileReader != null && audioFileReader.Position < audioFileReader.Length)
                     {
@@ -178,7 +177,7 @@ namespace Razzle
                 currentIndex = playlist.IndexOf(selectedTrack);
 
                 // Skip next
-                if (isNext && currentIndex < playlist.Count - 1)
+                if (isNext && currentIndex+1 < playlist.Count)
                 {
                     selectedTrack = playlist[currentIndex + 1];
                     Start(true);
@@ -198,10 +197,6 @@ namespace Razzle
                 else if (!isNext && playlist[playlist.Count - 1] != null)
                 {
                     selectedTrack = playlist[playlist.Count - 1];
-                    Start(true);
-                }
-                else
-                {
                     Start(true);
                 }
             }
