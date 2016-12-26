@@ -13,7 +13,7 @@
             <Setter Property="Margin" Value="3 0" />
         </Style>
 
-        <!-- Duck buttons -->
+        <!-- Duck buttons -->      
         <Style x:Key="bDucklings" TargetType="Button">
             <Setter Property="Height" Value="30" />
             <Setter Property="Width" Value="50" />
@@ -45,9 +45,10 @@
         <!-- MENUBAR -->
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
-                <MenuItem Header="Reset Outputs"  Click="MenuFileReset" />
+                <MenuItem Header="TeamSpeak Authorised Clients..." Click="MenuFileTSPerms"/>
                 <Separator />
-                <MenuItem Header="Exit Flight Deck..."  Click="MenuFileExit" />
+                <MenuItem Header="Reset Outputs"  Click="MenuFileReset" />
+                <MenuItem Header="Exit Razzle..."  Click="MenuFileExit" />
             </MenuItem>
             <MenuItem Header="_Help" >
                 <MenuItem Header="_User Manual" Click="MenuHelpUsermanual" />
@@ -63,11 +64,11 @@
             <StatusBarItem Content="Satellite:" />
             <StatusBarItem Content="{Binding Path='sourceState', UpdateSourceTrigger=PropertyChanged}" Width="40" Name="statSat"/>
             <Separator />
-            <StatusBarItem Content="Announcer Mic:" />
-            <StatusBarItem Content="Disabled" Width="60"/>
-            <Separator />
             <StatusBarItem Content="Play Mode:" />
             <StatusBarItem Content="{Binding Path='selectedPlayMode', UpdateSourceTrigger=PropertyChanged}" Width="100" Name="modePlayer" />
+            <Separator />
+            <StatusBarItem Content="Recording:" />
+            <StatusBarItem Content="{Binding Path='recState', UpdateSourceTrigger=PropertyChanged}" Width="100" Name="statRec" />
             <Separator />
             <StatusBarItem />
         </StatusBar>
@@ -88,19 +89,18 @@
                     </GroupBox>
 
                     <!-- Satellite Manual Override -->
-                    <GroupBox Style="{StaticResource gbTopBar}" Header="Satellite Manual Override" Grid.Row="0" >
+                    <GroupBox Style="{StaticResource gbTopBar}" Header="External Input Override" Grid.Row="0" >
                         <StackPanel Orientation="Horizontal" >
                             <Button Style="{StaticResource bTopBar}" Content="Start" Click="buttonSatStart" />
                             <Button Style="{StaticResource bTopBar}" Content="Stop" Click="buttonSatStop" />
                         </StackPanel>
                     </GroupBox>
 
-
-                    <!-- Microphone Override -->
-                    <GroupBox Style="{StaticResource gbTopBar}" Header="Announcer Microphone" Grid.Row="0" >
+                    <!-- Record Manual Override -->
+                    <GroupBox Style="{StaticResource gbTopBar}" Header="External Input Recording" Grid.Row="0" >
                         <StackPanel Orientation="Horizontal" >
-                            <Button Style="{StaticResource bTopBar}" Content="Start" IsEnabled="False" />
-                            <Button Style="{StaticResource bTopBar}" Content="Stop" IsEnabled="False" />
+                            <Button Style="{StaticResource bTopBar}" Content="Start" Click="buttonSatRecStart" />
+                            <Button Style="{StaticResource bTopBar}" Content="Stop" Click="buttonSatRecStop" />
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
@@ -117,38 +117,45 @@
             <!-- Lower Window Controls -->
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
                 <!-- Mixer -->
-                <GroupBox Header="Volume Mixer" Grid.Column="0" Margin="10 0" >
+                <GroupBox Header="Volume Mixer" Grid.Column="0" Margin="1 0" >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <GroupBox Header="Satellite" Grid.Column="0" Margin="10 0" Height="300" >
+                        <GroupBox Header="Ext" Grid.Column="0" Margin="1 0" Height="300" >
                             <DockPanel LastChildFill="True" HorizontalAlignment="Center">
-                                <Button Style="{StaticResource bDucklings}"  Content="Duck" DockPanel.Dock="Bottom" Click="buttonDuckSat" />
+                                
                                 <Slider Name="volSliderSat" Value="{Binding Path='volume', UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Width="20" Maximum="1" TickFrequency="0.1" LargeChange="0.25" ValueChanged="faderSat" />
                             </DockPanel>
                         </GroupBox>
-                        <GroupBox Header="Pr. Music" Grid.Column="0" Margin="10 0" Height="300" >
+                        <GroupBox Header="Music" Grid.Column="0" Margin="1 0" Height="300" >
                             <DockPanel LastChildFill="True" HorizontalAlignment="Center">
-                                <Button Style="{StaticResource bDucklings}" Click="buttonDuckP1" />
+                                
                                 <Slider Name="volSliderPlayer1" Value="{Binding Path='volume', UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Width="20" Maximum="1" TickFrequency="0.1" LargeChange="0.25"  ValueChanged="faderPlayer1"/>
                             </DockPanel>
                         </GroupBox>
-                        <GroupBox Header="Aux Music" Grid.Column="0" Margin="10 0" Height="300" >
+                        <GroupBox Header="Annc" Grid.Column="0" Margin="1 0" Height="300" >
                             <DockPanel LastChildFill="True" HorizontalAlignment="Center">
-                                <Button Style="{StaticResource bDucklings}" Click="buttonDuckP2" />
+                                
                                 <Slider Name="volSliderPlayer2" Value="{Binding Path='volume', UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Width="20" Maximum="1" TickFrequency="0.1" LargeChange="0.25"  ValueChanged="faderPlayer2"/>
                             </DockPanel>
-                            
                         </GroupBox>
+                        <GroupBox Header="Lect" Grid.Column="0" Margin="1 0" Height="300" >
+                            <DockPanel LastChildFill="True" HorizontalAlignment="Center">
+
+                                <Slider Name="volSliderPlayer3" Value="{Binding Path='volume', UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Width="20" Maximum="1" TickFrequency="0.1" LargeChange="0.25"  ValueChanged="faderPlayer3"/>
+                            </DockPanel>
+                        </GroupBox>
+
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- Onboard Music Control -->
-                <GroupBox Header="Music Player 1" Grid.Column="1" Margin="10 0" VerticalAlignment="Stretch">
+                <GroupBox Header="Music" Grid.Column="1" Margin="1 0" VerticalAlignment="Stretch">
                     <DockPanel LastChildFill="True">
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" DockPanel.Dock="Top">
@@ -173,16 +180,10 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" DockPanel.Dock="Top">
-                            <Button Style="{StaticResource bPicto}" Height="30" Width="40" Margin="3 0" Click="buttonPlaySingle">
-                                <Image Height="18" Source="images/pmSingle.png" />
-                            </Button>
-                            <Button Style="{StaticResource bPicto}" Height="30" Width="40" Margin="3 0" Click="buttonPlayRepeatOne" >
-                                <Image Height="18" Source="images/pmRepeatone.png" />
-                            </Button>
-                            <Button Style="{StaticResource bPicto}" Height="30" Width="40" Margin="3 0" Click="buttonPlayContinous" >
-                                <Image Height="18" Source="images/pmCont.png" />
-                            </Button>
-                            <Button Style="{StaticResource bPicto}" Content="Clear" Click="buttonClearList" />
+                            <Button Style="{StaticResource bPicto}" Content="Single" Height="20" Width="40" Margin="3 0" Click="buttonPlaySingle"/>
+                            <Button Style="{StaticResource bPicto}" Content="Normal" Height="20" Width="40" Margin="3 0" Click="buttonPlayNormal" />
+                            <Button Style="{StaticResource bPicto}" Content="Rpt1" Height="20" Width="40" Margin="3 0" Click="buttonPlayRepeatOne" />
+                            <Button Style="{StaticResource bPicto}" Content="Cont" Height="20" Width="40" Margin="3 0" Click="buttonPlayContinous" />
                         </StackPanel>
                         <Label Content="{Binding Path='sourceState', UpdateSourceTrigger=PropertyChanged}" Name="statMusic1" DockPanel.Dock="Top"/>
 
@@ -191,7 +192,7 @@
                 </GroupBox>
                 
                 <!-- Onboard music control secondary-->
-                <GroupBox Header="Music Player 2" Grid.Column="2" Margin="10 0" VerticalAlignment="Stretch">
+                <GroupBox Header="Announcements Player" Grid.Column="2" Margin="1 0" VerticalAlignment="Stretch">
                     <DockPanel LastChildFill="True" >
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" DockPanel.Dock="Top">
                             <Button Style="{StaticResource bPicto}"  Click="buttonPlayPlayer2">
@@ -214,6 +215,29 @@
                         <ListBox Name="Playlist2"  Margin="10 3" Grid.Row="1" SelectionChanged="Playlist2_SelectionChanged" SelectionMode="Extended" MouseDoubleClick="buttonPlayPlayer2" Drop="boxDrop2" AllowDrop="True"  />
                     </DockPanel>
                 </GroupBox>
+
+                <!-- Onboard music control thirdly-->
+                <GroupBox Header="Lectures Player" Grid.Column="3" Margin="1 0" VerticalAlignment="Stretch">
+                    <DockPanel LastChildFill="True" >
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" DockPanel.Dock="Top">
+                            <Button Style="{StaticResource bPicto}"  Click="buttonPlayPlayer3">
+                                <Image Height="18" Source="images/btnPlay.png" />
+                            </Button>
+                            <Button Style="{StaticResource bPicto}"  Click="buttonStopPlayer3">
+                                <Image Height="18" Source="images/btnStop.png" />
+                            </Button>
+                            <Button Style="{StaticResource bPicto}"  Click="buttonAddPlayer3">
+                                <Image Height="18" Source="images/btnAdd.png" />
+                            </Button>
+                            <Button Style="{StaticResource bPicto}"  Click="buttonDelPlayer3">
+                                <Image Height="18" Source="images/btnDelete.png" />
+                            </Button>
+                        </StackPanel>
+                        <Label Content="{Binding Path='sourceState', UpdateSourceTrigger=PropertyChanged}" Name="statMusic3" DockPanel.Dock="Top"/>
+                        <ListBox Name="Playlist3"  Margin="10 3" Grid.Row="1" SelectionChanged="Playlist3_SelectionChanged" SelectionMode="Extended" MouseDoubleClick="buttonPlayPlayer3" Drop="boxDrop3" AllowDrop="True"  />
+                    </DockPanel>
+                </GroupBox>
+
             </Grid>
         </DockPanel>
     </DockPanel>

@@ -28,12 +28,12 @@ namespace Razzle
         {
             InitializeComponent();
 
-            
             controls = new mControllerPanel();
 
             //status bar set context
             statAP.DataContext = controls.ap;
             statSat.DataContext = controls.satellite;
+            statRec.DataContext = controls.satellite;
             statMusic1.DataContext = controls.player1;
             statMusic2.DataContext = controls.player2;
             modePlayer.DataContext = controls.player1;
@@ -42,10 +42,12 @@ namespace Razzle
             volSliderSat.DataContext = controls.satellite;
             volSliderPlayer1.DataContext = controls.player1;
             volSliderPlayer2.DataContext = controls.player2;
+            volSliderPlayer3.DataContext = controls.player3;
 
             //players set context
             Playlist1.ItemsSource = controls.player1.playlist;
             Playlist2.ItemsSource = controls.player2.playlist;
+            Playlist3.ItemsSource = controls.player3.playlist;
         }
 
         /* Sat Controls */
@@ -57,6 +59,16 @@ namespace Razzle
         private void buttonSatStop(object sender, RoutedEventArgs e)
         {
             controls.satellite.Stop();
+        }
+
+        private void buttonSatRecStart(object sender, RoutedEventArgs e)
+        {
+            controls.satellite.RecordStart();
+        }
+
+        private void buttonSatRecStop(object sender, RoutedEventArgs e)
+        {
+            controls.satellite.RecordStop();
         }
 
         /* AP Controls */
@@ -77,26 +89,15 @@ namespace Razzle
             controls.satellite.SetVolume((float)e.NewValue);
         }
 
-        private void buttonDuckSat(object sender, RoutedEventArgs e)
-        {
-            controls.satDuck();
-        }
-
-
         // Music Player
         private void faderPlayer1(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             controls.player1.SetVolume((float)e.NewValue);
         }
 
-        private void buttonDuckP1(object sender, RoutedEventArgs e)
-        {
-            controls.P1Duck();
-        }
-
         private void buttonPlayPlayer1(object sender, RoutedEventArgs e)
         {
-            controls.P1Start();
+            controls.player1.Start(true);
         }
 
         private void buttonStopPlayer1(object sender, RoutedEventArgs e)
@@ -106,12 +107,12 @@ namespace Razzle
 
         private void buttonPrevPlayer1(object sender, RoutedEventArgs e)
         {
-            controls.P1SkipPrev();
+            controls.player1.skip(false, true);
         }
 
         private void buttonNextPlayer1(object sender, RoutedEventArgs e)
         {
-            controls.P1SkipNext();
+            controls.player1.skip(true, true);
         }
 
         private void buttonAddPlayer1(object sender, RoutedEventArgs e)
@@ -121,7 +122,6 @@ namespace Razzle
 
         private void buttonDelPlayer1(object sender, RoutedEventArgs e)
         {
-            //controls.player1.delSelectedTrack();
             controls.player1.delTracks(Playlist1.SelectedItems);
         }
 
@@ -150,6 +150,8 @@ namespace Razzle
             }
         }
 
+        // Interfaces player 2
+
         private void boxDrop2(object sender, DragEventArgs e)
         {
 
@@ -168,20 +170,14 @@ namespace Razzle
         }
 
         // Music Player secondary 
-
         private void faderPlayer2(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             controls.player2.SetVolume((float)e.NewValue);
         }
 
-        private void buttonDuckP2(object sender, RoutedEventArgs e)
-        {
-            controls.P2Duck();
-        }
-
         private void buttonPlayPlayer2(object sender, RoutedEventArgs e)
         {
-            controls.P2Start();
+            controls.player2.Start(true);
         }
 
 
@@ -195,15 +191,6 @@ namespace Razzle
             controls.player2.Stop();
         }
 
-        private void buttonPrevPlayer2(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void buttonNextPlayer2(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void buttonAddPlayer2(object sender, RoutedEventArgs e)
         {
@@ -212,7 +199,6 @@ namespace Razzle
 
         private void buttonDelPlayer2(object sender, RoutedEventArgs e)
         {
-            //controls.player2.delSelectedTrack();
             controls.player2.delTracks(Playlist2.SelectedItems);
         }
 
@@ -224,10 +210,63 @@ namespace Razzle
             }
         }
 
+        // Interfaces player 3
 
+        private void faderPlayer3(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            controls.player3.SetVolume((float)e.NewValue);
+        }
+
+        private void buttonPlayPlayer3(object sender, RoutedEventArgs e)
+        {
+            controls.player3.Start(true);
+        }
+
+        private void buttonStopPlayer3(object sender, RoutedEventArgs e)
+        {
+            controls.player3.Stop();
+        }
+
+        private void buttonAddPlayer3(object sender, RoutedEventArgs e)
+        {
+            controls.player3.browseFile();
+        }
+
+        private void buttonDelPlayer3(object sender, RoutedEventArgs e)
+        {
+            controls.player3.delTracks(Playlist1.SelectedItems);
+        }
+
+        private void Playlist3_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                controls.player3.selectTrack((musicItem)e.AddedItems[0]);
+            }
+        }
+
+        private void boxDrop3(object sender, DragEventArgs e)
+        {
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Assuming you have one file that you care about, pass it off to whatever
+                // handling code you have defined.
+                foreach (string item in files)
+                {
+                    controls.player3.addTrack(item);
+                }
+            }
+        }
+
+
+        // Window controls
         void DataWindow_Closing(object sender, CancelEventArgs e)
         {
-        string msg = "Are you sure you want to close this program?";
+            string msg = "Are you sure you want to close this program?";
             MessageBoxResult result =
                 MessageBox.Show(
                     msg,
@@ -250,6 +289,11 @@ namespace Razzle
             controls.player1.selectedPlayMode = sourcePlayer.playModes.Single;
         }
 
+        private void buttonPlayRepeatNormal(object sender, RoutedEventArgs e)
+        {
+            controls.player1.selectedPlayMode = sourcePlayer.playModes.Normal;
+        }
+
         private void buttonPlayRepeatOne(object sender, RoutedEventArgs e)
         {
             controls.player1.selectedPlayMode = sourcePlayer.playModes.RepeatOne;
@@ -258,6 +302,11 @@ namespace Razzle
         private void buttonPlayContinous(object sender, RoutedEventArgs e)
         {
             controls.player1.selectedPlayMode = sourcePlayer.playModes.Continous;
+        }
+
+        private void buttonPlayNormal(object sender, RoutedEventArgs e)
+        {
+            controls.player1.selectedPlayMode = sourcePlayer.playModes.Normal;
         }
 
         private void buttonClearList(object sender, RoutedEventArgs e)
@@ -287,6 +336,13 @@ namespace Razzle
         private void MenuFileExit(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void MenuFileTSPerms(object sender, RoutedEventArgs e)
+        {
+            RazzleSettings RSettingsWin = new RazzleSettings();
+            RSettingsWin.ShowDialog();
+
         }
 
         private void MenuFileReset(object sender, RoutedEventArgs e)

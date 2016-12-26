@@ -64,17 +64,17 @@ namespace Razzle
 
         public void apRoutines()
         {
-            apAddRoutine("Saturday Main Program PREP", mainMusicStartOnly, 15, 30, DayOfWeek.Saturday);
-            apAddRoutine("Saturday Main Program START", announceAndMainStart, 15, 55, DayOfWeek.Saturday);
+            apAddRoutine("Saturday Main Program PREP", preMusicStart, 15, 30, DayOfWeek.Saturday);
+            apAddRoutine("Saturday Main Program START", mainProgramStart, 15, 55, DayOfWeek.Saturday);
             apAddRoutine("Saturday Main Program FINISH", mainProgramFinish, 17, 03, DayOfWeek.Saturday);
 
-            apAddRoutine("Saturday Night Program START", auxStartOnly, 22, 00, DayOfWeek.Saturday);
+            apAddRoutine("Saturday Night Program START", nightlyReplay, 22, 00, DayOfWeek.Saturday);
 
-            apAddRoutine("SUNDAY Main Program PREP", mainMusicStartOnly, 13, 30, DayOfWeek.Sunday);
-            apAddRoutine("SUNDAY Main Program START", announceAndMainStart, 13, 55, DayOfWeek.Sunday);
+            apAddRoutine("SUNDAY Main Program PREP", preMusicStart, 13, 30, DayOfWeek.Sunday);
+            apAddRoutine("SUNDAY Main Program START", mainProgramStart, 13, 55, DayOfWeek.Sunday);
             apAddRoutine("SUNDAY Main Program FINISH", mainProgramFinish, 15, 03, DayOfWeek.Sunday);
 
-            apAddRoutine("SUNDAY Night Program START", auxStartOnly, 22, 00, DayOfWeek.Sunday);
+            apAddRoutine("SUNDAY Night Program START", nightlyReplay, 22, 00, DayOfWeek.Sunday);
 
         }
 
@@ -115,55 +115,52 @@ namespace Razzle
         }
 
         /* Individual subroutines */
+        void preMusicStart()
+        {
+            cs.satellite.Stop();
+            cs.player2.Stop();
+            cs.player1.selectedPlayMode = sourcePlayer.playModes.Continous;
+            cs.player1.Start(true);
+            cs.player1.SetVolume(1f);
+        }
+
         void mainProgramStart()
         {
-            cs.player1.Stop();
-            cs.player2.Stop();
-            cs.satellite.Start();
-            cs.satellite.SetVolume(1f);
+            new Thread(() =>
+            {
+                cs.satellite.RecordStart();
+                
+                cs.satellite.Stop();
+                cs.player1.Stop();
+
+                cs.player2.Start(false);
+                cs.satellite.Start();
+            }).Start();
         }
 
         void mainProgramFinish()
         {
-            cs.player1.selectedPlayMode = sourcePlayer.playModes.Continous;
+            cs.satellite.RecordStop();
             cs.satellite.Stop();
-            //cs.P1Start();
-            cs.player1.SetVolume(1f);
         }
 
-        void announceAndMainStart()
+        void nightlyReplay()
         {
-            cs.player1.Stop();
-            cs.P2StartToSat();
+            new Thread(() =>
+            {
+                cs.satellite.Stop();
+                cs.player1.Stop();
+                cs.player2.Stop();
+                cs.player3.Stop();
+
+                cs.player2.SetVolume(1f);
+                cs.player2.Start(false);
+
+                cs.player3.SetVolume(1f);
+                cs.player3.Start(false);
+            }).Start();
         }
 
-        void auxStartOnly()
-        {
-            cs.satellite.Stop();
-            cs.player1.Stop();
-
-            cs.P2Start();
-            cs.player2.SetVolume(1f);
-        }
-
-        void auxStopOnly()
-        {
-            cs.player2.Stop();
-        }
-
-        void mainMusicStartOnly()
-        {
-            cs.satellite.Stop();
-            cs.player2.Stop();
-            cs.player1.selectedPlayMode = sourcePlayer.playModes.Continous;
-            cs.P1Start();
-            cs.player1.SetVolume(1f);
-        }
-
-        void mainMusicStopOnly()
-        {
-            cs.player1.Stop();
-        }
 
 
         /* Master Switch */

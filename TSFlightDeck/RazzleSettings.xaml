@@ -1,0 +1,46 @@
+﻿<Window x:Class="Razzle.RazzleSettings" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TS Permissions" Height="320" MinHeight="320" Width="500" MinWidth="500" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="buttons" TargetType="Button">
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Width" Value="80" />
+            <Setter Property="Margin" Value="10 4" />
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Orientation="Vertical">
+        <GroupBox Header="Recording">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Directory"/>
+                <TextBox Name="directoryf" Width="200" Margin="10 2"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="TeamSpeak Permitted Users" DockPanel.Dock="Top">
+            <StackPanel Orientation="Vertical">
+                <ListBox DockPanel.Dock="Top" Name="UserList"  Margin="10 3" Grid.Row="1" SelectionMode="Extended" Height="100" />
+                <StackPanel Orientation="Vertical" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="60">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                        <Label Content="Name"/>
+                        <TextBox Name="namef" Width="200" Margin="10 2"/>
+                        <Button Style="{StaticResource buttons}" Content="Add" Click="Button_Add" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                        <Label Content="UID"/>
+                        <TextBox Name="uidf" Width="200" Margin="10 2"/>
+                        <Button Style="{StaticResource buttons}" Content="Remove" Click="Button_Remove" />
+                    </StackPanel>
+                </StackPanel>
+                
+
+            </StackPanel>
+        </GroupBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="50" DockPanel.Dock="Bottom">
+            <Button Style="{StaticResource buttons}" Content="Save" Click="Button_Save" />
+            <Button Style="{StaticResource buttons}" Content="Cancel" Click="Button_Cancel" />
+        </StackPanel>
+    </StackPanel>
+
+</Window>

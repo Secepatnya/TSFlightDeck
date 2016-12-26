@@ -8,6 +8,8 @@ using NAudio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.ComponentModel;
+using System.Windows.Forms;
+using System.Xml.Linq;
 
 
 namespace Razzle
@@ -22,10 +24,13 @@ namespace Razzle
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /* Tracking */
+
+
         /* Settings */
+        private string configfilename = "RazzleConfig.xml";
 
         /* Init Stuff */
-        //private DirectSoundOut outputMaster;
         private WaveOutEvent outputMaster;
         private MixingSampleProvider mixer;
 
@@ -33,15 +38,16 @@ namespace Razzle
         public sourceSatellite satellite;
         public sourcePlayer player1;
         public sourcePlayer player2;
+        public sourcePlayer player3;
 
         private float duckedVol = 0.2f;
 
         public mControllerPanel()
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
-            
+
+            // Init audio
             // Open mixer
-            //mixer = new MixingWaveProvider32();
             mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
             mixer.ReadFully = true;
 
@@ -49,16 +55,18 @@ namespace Razzle
             satellite = new sourceSatellite(mixer);
             player1 = new sourcePlayer(mixer);
             player2 = new sourcePlayer(mixer);
-            
+            player3 = new sourcePlayer(mixer);
+
             // Open output line
-            //outputMaster = new DirectSoundOut();
             outputMaster = new WaveOutEvent();
 
-            outputMaster.DesiredLatency = 700;
+            outputMaster.DesiredLatency = 500;
             outputMaster.Init(mixer);
             outputMaster.Play();
+
             loadConfig();
 
+            //Connect the Teamspeak interface
             ap = new mAutopilot(this);
             tsInterface.setController(this);
             tsInterface.pollServiceStart();
@@ -67,173 +75,99 @@ namespace Razzle
 
         public void resetOutput()
         {
-            satellite.Stop();
-            player1.Stop();
-            player2.Stop();
-            Thread.Sleep(500);
-            outputMaster.Stop();
-            Thread.Sleep(500);
-            outputMaster.Play();
+            shutdown();
+            Application.Restart();
+            Environment.Exit(-1);
         }
 
-        public void satDuck()
+        public void P2StartQuacking()
         {
-            new Thread(() =>
-            {
-                satellite.Duck();
-            }).Start();
-        }
-
-        public void P1Start()
-        {
-            new Thread(() =>
-            {
-                player1.Start();
-            }).Start();
-        }
-
-        public void P1Duck()
-        {
-            new Thread(() =>
-            {
-                player1.Duck();
-            }).Start();
-        }
-
-        public void P1SkipPrev()
-        {
-            new Thread(() =>
-            {
-                player1.skip(false);
-            }).Start();
-        }
-
-        public void P1SkipNext()
-        {
-            new Thread(() =>
-            {
-                player1.skip(true);
-            }).Start();
-        }
-
-        public void P2Start()
-        {
-            new Thread(() =>
-            {
-                player2.Start();
-            }).Start();
-        }
-
-        public void P2StartToSat()
-        {
-            new Thread(() =>
-            {
-                player2.Start();
-                satellite.Start();
-            }).Start();
-        }
-
-        public void P2StartQuacking() {
             new Thread(() =>
             {
                 satellite.DuckTo(duckedVol);
                 player1.DuckTo(duckedVol);
-
-                player2.Start();
-                
+                player3.DuckTo(duckedVol);
+                player2.Start(false);
                 satellite.DuckTo(1f);
                 player1.DuckTo(1f);
             }).Start();
-        }
 
-        public void P2Duck()
-        {
-            new Thread(() =>
-            {
-                player2.Duck();
-            }).Start();
         }
 
         public bool P1findTrack(string target)
         {
-            Console.WriteLine("Looking for track with name: {0}", target);
-            List<musicItem> tempList = player1.playlist.ToList<musicItem>();
-            foreach (musicItem item in tempList)
-            {
-                if (item.name.ToLower().Contains(target))
-                {
-                    player1.selectTrack(item);
-                    return true;
-                }
-            }
-            return false;
+            return player1.findTrack(target);
         }
 
         public bool P2findTrack(string target)
         {
-            Console.WriteLine("Looking for track with name: {0}", target);
-            List<musicItem> tempList = player2.playlist.ToList<musicItem>();
-            foreach (musicItem item in tempList)
-            {
-                if (item.name.ToLower().Contains(target))
-                {
-                    player2.selectTrack(item);
-                    return true;
-                }
-            }
-            return false;
+            return player2.findTrack(target);
         }
 
-        public void loadConfig() {
+        public bool P3findTrack(string target)
+        {
+            return player3.findTrack(target);
+        }
 
-            //Properties.Settings.Default.contentPL1 = null;
-            //Properties.Settings.Default.contentPL2 = null;
-
-            if (Properties.Settings.Default.contentPL1 != null)
+        public void loadConfig()
+        {
+            try
             {
-                foreach (string item in Properties.Settings.Default.contentPL1)
+                XElement config = XElement.Load(configfilename);
+
+                sourceSatellite.setRecordDirectory(@"C:\");
+                sourceSatellite.setRecordDirectory(config.Element("RecordDir").Value);
+                
+                foreach (XElement user in config.Element("TSUsers").Elements())
                 {
-                    player1.addTrack(item);
+                    tsInterface.addUser(user.Element("name").Value, user.Element("uid").Value);
                 }
+
+                foreach (XElement item in config.Element("playlist1").Elements())
+                {
+                    player1.addTrack(item.Value);
+                }
+
+                foreach (XElement item in config.Element("playlist2").Elements())
+                {
+                    player2.addTrack(item.Value);
+                }
+
+                foreach (XElement item in config.Element("playlist3").Elements())
+                {
+                    player3.addTrack(item.Value);
+                }
+
             }
-
-            if (Properties.Settings.Default.contentPL1 != null)
+            catch
             {
-                foreach (string item in Properties.Settings.Default.contentPL2)
-                {
-                    player2.addTrack(item);
-                }
+
             }
 
         }
 
         public void shutdown()
         {
-            player1.Stop();      
-            player2.Stop();      
-            satellite.Stop();    
-            outputMaster.Stop(); 
+            player1.Stop();
+            player2.Stop();
+            player3.Stop();
+            satellite.Stop();
+            outputMaster.Stop();
 
-            // Clear savefile
-            Properties.Settings.Default.contentPL1 = null;
-            Properties.Settings.Default.contentPL2 = null;
+            //Test XML
+            XDocument config = new XDocument(
+                new XElement("RazzleConfig",
+                    new XElement("RecordDir", sourceSatellite.directory),
+                    new XElement("TSUsers", tsInterface.allowuid.Select(x=> new XElement("user",
+                        new XElement("name", x.name),
+                        new XElement("uid", x.uid)))),
+                    new XElement("playlist1", player1.playlist.Select(x => new XElement("item", x.url))),
+                    new XElement("playlist2", player2.playlist.Select(x => new XElement("item", x.url))),
+                    new XElement("playlist3", player3.playlist.Select(x => new XElement("item", x.url)))
+                )
+            );
 
-            Properties.Settings.Default.contentPL1 = new System.Collections.Specialized.StringCollection();
-            Properties.Settings.Default.contentPL2 = new System.Collections.Specialized.StringCollection();
-            
-            // Save content
-            foreach (musicItem track in player1.playlist) {
-                Properties.Settings.Default.contentPL1.Add(track.url);
-            }
-
-            foreach (musicItem track in player2.playlist) {
-                Properties.Settings.Default.contentPL2.Add(track.url);    
-            }
-
-
-
-            Properties.Settings.Default.Save();
-
+            config.Save(configfilename);
         }
     }
 }

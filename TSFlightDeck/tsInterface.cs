@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.IO;
+using System.Collections.ObjectModel;
 
 
 namespace Razzle
@@ -15,15 +16,23 @@ namespace Razzle
         static DispatcherTimer timer;
         static DispatcherTimer timer2;
         static mControllerPanel cs;
-        static List<string> allowuid = new List<string>();
+        public static ObservableCollection<tsuser> allowuid = new ObservableCollection<tsuser>();
 
         
         public static MinimalisticTelnet.TelnetConnection tc = new MinimalisticTelnet.TelnetConnection();
 
         static tsInterface()
         {
-            // IDs go here
-            allowuid.Add("UihKsxdxvU1NnLskaoq+lQhcbPY=");
+        }
+
+        public static void addUser(string name, string uid)
+        {
+            allowuid.Add(
+                new tsuser
+                {
+                    name = name,
+                    uid = uid
+                });
         }
 
         public static void connect()
@@ -59,7 +68,7 @@ namespace Razzle
         {
             if (input == null) return;
 
-            Console.WriteLine("message: " + input);
+            //Console.WriteLine("message: " + input);
             if (input.Length > 0)
             {
                 string sender;
@@ -117,7 +126,7 @@ namespace Razzle
             string senderuidtr = senderuid.Substring(11);
 
             // permissions check
-            if (allowuid.All(senderuidtr.Contains)) // build for CHTEA TS
+            if (allowuid.Any(tsuser => tsuser.uid.Equals(senderuidtr))) // build for CHTEA TS
             //if (true) // build for Cherie's TS
             {
                 if (cmd == "msg=fdselect1")  // find player 1 track
@@ -157,11 +166,11 @@ namespace Razzle
                 }
                 else if (cmd == "msg=fdplay1") // start player 1
                 {
-                    cs.P1Start();
+                    cs.player1.Start(true);
                 }
                 else if (cmd == "msg=fdplay2") // start player 2
                 {
-                    cs.P2Start();
+                    cs.player2.Start(true);
                 }
                 else if (cmd == "msg=fdann") // duck all sources and start player 2
                 {

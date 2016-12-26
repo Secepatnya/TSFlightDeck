@@ -43,8 +43,8 @@ namespace MinimalisticTelnet
             {
                 try
                 {
-                    tcpSocket = new TcpClient("127.0.0.1", 25639);
-                    //tcpSocket = new TcpClient("10.211.55.2", 25639);
+                    //tcpSocket = new TcpClient("127.0.0.1", 25639);
+                    tcpSocket = new TcpClient("10.0.0.74", 25639);
                     WriteLine("clientnotifyregister schandlerid=1 event=notifytextmessage");
                     WriteLine("clientnotifyregister schandlerid=1 event=notifyclientpoke");
                 }

@@ -33,9 +33,6 @@ namespace Razzle
             set { if (_sourceState != value) { _sourceState = value; NotifyPropertyChanged("sourceState"); } }
         }
 
-        
-
-        public bool isDucked { get; set; }
         public bool locked = false;
 
     }
