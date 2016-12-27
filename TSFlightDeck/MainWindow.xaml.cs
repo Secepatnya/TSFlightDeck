@@ -234,7 +234,7 @@ namespace Razzle
 
         private void buttonDelPlayer3(object sender, RoutedEventArgs e)
         {
-            controls.player3.delTracks(Playlist1.SelectedItems);
+            controls.player3.delTracks(Playlist3.SelectedItems);
         }
 
         private void Playlist3_SelectionChanged(object sender, SelectionChangedEventArgs e)

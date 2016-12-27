@@ -45,9 +45,9 @@
         <!-- MENUBAR -->
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
-                <MenuItem Header="TeamSpeak Authorised Clients..." Click="MenuFileTSPerms"/>
+                <MenuItem Header="TS Music Bot Settings..." Click="MenuFileTSPerms"/>
                 <Separator />
-                <MenuItem Header="Reset Outputs"  Click="MenuFileReset" />
+                <MenuItem Header="Restart TS Music Bot"  Click="MenuFileReset" />
                 <MenuItem Header="Exit Razzle..."  Click="MenuFileExit" />
             </MenuItem>
             <MenuItem Header="_Help" >
