@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSFlightDeck", "TSFlightDeck\TSFlightDeck.csproj", "{AC4E0B3D-C0B6-4FBE-AB10-BB2B39F59ED7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSBotRazzle", "TSFlightDeck\TSBotRazzle.csproj", "{AC4E0B3D-C0B6-4FBE-AB10-BB2B39F59ED7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

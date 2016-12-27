@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<autopilotDefs>
+  <item>
+    <name>Saturday main program pre</name>
+    <action>preMusicStart</action>
+    <triggerHour>15</triggerHour>
+    <triggerMinute>30</triggerMinute>
+    <triggerDayOfWeek>Saturday</triggerDayOfWeek>
+  </item>
+
+  <item>
+    <name>Saturday main program start</name>
+    <action>mainProgramStart</action>
+    <triggerHour>15</triggerHour>
+    <triggerMinute>55</triggerMinute>
+    <triggerDayOfWeek>Saturday</triggerDayOfWeek>
+  </item>
+
+  <item>
+    <name>Saturday main program finish</name>
+    <action>mainProgramFinish</action>
+    <triggerHour>17</triggerHour>
+    <triggerMinute>03</triggerMinute>
+    <triggerDayOfWeek>Saturday</triggerDayOfWeek>
+  </item>
+
+  <item>
+    <name>Nightly replay saturday</name>
+    <action>nightlyReplay</action>
+    <triggerHour>22</triggerHour> <!-- Change this for daylight savings -->
+    <triggerMinute>00</triggerMinute>
+    <triggerDayOfWeek>Saturday</triggerDayOfWeek>
+  </item>
+  
+  
+  <item>
+    <name>Sunday main program pre</name>
+    <action>preMusicStart</action>
+    <triggerHour>13</triggerHour>
+    <triggerMinute>30</triggerMinute>
+    <triggerDayOfWeek>Sunday</triggerDayOfWeek>
+  </item>
+
+  <item>
+    <name>Sunday main program start</name>
+    <action>mainProgramStart</action>
+    <triggerHour>13</triggerHour>
+    <triggerMinute>55</triggerMinute>
+    <triggerDayOfWeek>Sunday</triggerDayOfWeek>
+  </item>
+
+  <item>
+    <name>Sunday main program finish</name>
+    <action>mainProgramFinish</action>
+    <triggerHour>15</triggerHour>
+    <triggerMinute>03</triggerMinute>
+    <triggerDayOfWeek>Sunday</triggerDayOfWeek>
+  </item>
+
+  <item>
+    <name>Nightly replay Sunday</name>
+    <action>nightlyReplay</action>
+    <triggerHour>22</triggerHour> <!-- Change this for daylight savings -->
+    <triggerMinute>00</triggerMinute>
+    <triggerDayOfWeek>Sunday</triggerDayOfWeek>
+  </item>
+
+</autopilotDefs>

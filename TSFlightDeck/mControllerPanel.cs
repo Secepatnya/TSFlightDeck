@@ -29,6 +29,7 @@ namespace Razzle
 
         /* Settings */
         private string configfilename = "RazzleConfig.xml";
+        private string autopilotconfig = "autopilotDefs.xml";
 
         /* Init Stuff */
         private WaveOutEvent outputMaster;
@@ -64,13 +65,13 @@ namespace Razzle
             outputMaster.Init(mixer);
             outputMaster.Play();
 
-            loadConfig();
-
             //Connect the Teamspeak interface
             ap = new mAutopilot(this);
             tsInterface.setController(this);
             tsInterface.pollServiceStart();
             tsInterface.connect();
+
+            loadConfig();
         }
 
         public void resetOutput()
@@ -109,6 +110,15 @@ namespace Razzle
             return player3.findTrack(target);
         }
 
+        public void reloadConfig()
+        {
+            player1.playlist.Clear();
+            player2.playlist.Clear();
+            player3.playlist.Clear();
+            ap.apClearRoutines();
+            loadConfig();
+        }
+
         public void loadConfig()
         {
             try
@@ -144,6 +154,21 @@ namespace Razzle
 
             }
 
+            try
+            {
+                XDocument config = XDocument.Load(autopilotconfig);
+
+                foreach (XElement item in config.Element("autopilotDefs").Elements())
+                {
+                    Console.WriteLine(ap.apAddRoutineFromFile(item.Element("name").Value, item.Element("action").Value, item.Element("triggerHour").Value, item.Element("triggerMinute").Value, item.Element("triggerDayOfWeek").Value));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception thrown: " + e.ToString());
+            }
+
+
         }
 
         public void shutdown()
@@ -152,6 +177,7 @@ namespace Razzle
             player2.Stop();
             player3.Stop();
             satellite.Stop();
+            satellite.RecordStop();
             outputMaster.Stop();
 
             //Test XML

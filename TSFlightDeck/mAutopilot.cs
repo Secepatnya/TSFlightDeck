@@ -44,8 +44,6 @@ namespace Razzle
             cs = targetPanel;
             events = new ObservableCollection<eventItem>();
 
-            apRoutines();
-            //mainMusicStartOnly(); // Build for Cherie's TS 
             autoStart(); // Build for CHTEA TS
         }
 
@@ -59,7 +57,60 @@ namespace Razzle
                 dayName = dayName,
                 hasFired = false
             });
+        }
 
+        public string apAddRoutineFromFile(string name, string command, string hour, string minute, string dayName)
+        {
+            int pHour, pMinute = 0;
+            DayOfWeek pDayOfWeek;
+            Action pAction;
+
+            try
+            {
+                pHour = int.Parse(hour);
+                pMinute = int.Parse(minute);
+            }
+            catch
+            {
+                return "Can't parse the given time values!";
+            }
+
+            switch (dayName)
+            {
+                case "Monday": pDayOfWeek = DayOfWeek.Monday; break;
+                case "Tuesday": pDayOfWeek = DayOfWeek.Tuesday; break;
+                case "Wednesday": pDayOfWeek = DayOfWeek.Wednesday; break;
+                case "Thursday": pDayOfWeek = DayOfWeek.Thursday; break;
+                case "Friday": pDayOfWeek = DayOfWeek.Friday; break;
+                case "Saturday": pDayOfWeek = DayOfWeek.Saturday; break;
+                case "Sunday": pDayOfWeek = DayOfWeek.Sunday; break;
+                default: return "Can't parse the dayname!";
+            }
+
+            switch (command)
+            {
+                case "preMusicStart": pAction = preMusicStart; break;
+                case "mainProgramStart": pAction = mainProgramStart; break;
+                case "mainProgramFinish": pAction = mainProgramFinish; break;
+                case "nightlyReplay": pAction = nightlyReplay; break;
+                default: return "Can't parse the command!";
+            }
+            
+            events.Add(new eventItem
+            {
+                name = name,
+                command = pAction,
+                startTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, pHour, pMinute, 00),
+                dayName = pDayOfWeek,
+                hasFired = false
+            });
+            Console.WriteLine("Added event: " + name + ", " + command + " at " + hour + ":" + minute + " on " + dayName + "s");
+            return "OK";
+        }
+
+        public void apClearRoutines()
+        {
+            events.Clear();
         }
 
         public void apRoutines()

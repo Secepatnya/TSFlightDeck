@@ -56,6 +56,7 @@ namespace Razzle
         {
             if (recState == "STOPPED")
             {
+                recState = "STARTING";
                 //Open channel for recording
                 inputSatRec = new WaveInEvent();
                 inputSatRec.DeviceNumber = devNum;
@@ -72,19 +73,23 @@ namespace Razzle
 
         public void RecordStop()
         {
-            if (inputSatRec != null)
+            if (recState == "RECORDING")
             {
-                inputSatRec.StopRecording();
-                inputSatRec.Dispose();
-            }
+                recState = "STOPPING";
+                if (inputSatRec != null)
+                {
+                    inputSatRec.StopRecording();
+                    inputSatRec.Dispose();
+                }
 
-            if (mp3writer != null)
-            {
-                mp3writer.Flush();
-                mp3writer.Dispose();
+                if (mp3writer != null)
+                {
+                    mp3writer.Flush();
+                    mp3writer.Dispose();
+                    tsInterface.sendMessage("Recording stopped successfully!");
+                }
             }
             recState = "STOPPED";
-            tsInterface.sendMessage("Recording stopped successfully!");
         }
 
         private String generateFileName()
@@ -97,7 +102,8 @@ namespace Razzle
 
             String final = directory + dateprefix + namebody + suffix + extension;
 
-            while (File.Exists(final)) {
+            while (File.Exists(final))
+            {
                 suffixcount += 1;
                 suffix = suffixcount.ToString();
                 final = directory + dateprefix + namebody + suffix + extension;
